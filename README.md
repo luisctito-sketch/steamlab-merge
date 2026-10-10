@@ -37,3 +37,11 @@ El archivo `targets.mind` generado a partir de ellas también debe mantenerse
 privado.
 
 El primer visor con marcador Hiro (`steamlab-ra`) no cambia.
+
+## Corrección del compilador
+Se usa la distribución oficial de MindAR alojada en la rama de versión 1.2.5.
+Si el compilador embebido no se carga, utilice el compilador oficial:
+https://hiukim.github.io/mind-ar-js-doc/tools/compile/
+Seleccione las seis caras en orden 01 a 06 y descargue `targets.mind`.
+El compilador oficial es una página de terceros; revise sus condiciones antes de
+cargar imágenes sujetas a restricciones de licencia.
