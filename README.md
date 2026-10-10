@@ -1,45 +1,30 @@
-# STEAMLab · Merge Cube original — experimento WebAR
+# STEAMLab · Merge Cube original — versión con plantilla
 
-Este proyecto es **independiente** del visor Hiro publicado anteriormente. No usa ni requiere una app oficial Merge EDU; explora reconocer imágenes de las caras originales del Merge Cube mediante MindAR.
+Este repositorio es **independiente** de `steamlab-ra` (Hiro). Muestra una superficie térmica simulada mediante reconocimiento experimental de las caras originales del cubo.
 
-## Estado real
+## Sin fotografías
 
-**Prototipo experimental, no probado con las seis caras de tu cubo.** La foto inclinada de tres caras que compartiste no basta para un entrenamiento fiable. Para que funcione, se necesitan imágenes rectas, nítidas y completas, una por cara. El archivo `targets.mind` **no viene incluido**: se genera mediante `entrenar.html` y se sube a GitHub. Antes de generarlo, `visor.html` no reconocerá ninguna cara.
+Las seis imágenes de referencia ya se extrajeron de la plantilla PDF aportada por el usuario y se proporcionan **por separado, para uso personal**. El código publicado en GitHub **no contiene** las caras de Merge ni `targets.mind`.
 
-MindAR reconoce **objetivos planos individuales**. Aunque entrenes las seis caras, todavía **NO** existe seguimiento volumétrico continuo ni fusión de poses de un cubo 3D. Cuando una cara se oculte, puede perderse la RA hasta que detecte otra. Tampoco garantiza reconocer todas las caras: depende del patrón, brillo, fotografías y cámara. Un cubo Merge no se convierte automáticamente en un marcador Hiro ni en seis marcadores AR.js.
+## Publicar en GitHub Pages
 
-## 1. Crea otro repositorio
+1. Crear repositorio público nuevo, por ejemplo `steamlab-merge`.
+2. Subir solo los archivos de este paquete de GitHub: `index.html`, `entrenar.html`, `visor.html`, `surface.js`, `style.css`, `README.md`. No subir imágenes del Merge Cube ni `targets.mind`.
+3. Settings → Pages → Deploy from branch → main / (root) → Save.
+4. En tu computadora, abrir `https://TU-USUARIO.github.io/steamlab-merge/entrenar.html`.
+5. Seleccionar las **seis imágenes** del paquete personal de referencia, desde tu computadora. Pulsar **Generar targets.mind**. Requiere internet y puede utilizar bastante memoria.
+6. Transferir `targets.mind` al celular mediante USB, Drive o mecanismo de transferencia de archivos. No hace falta subirlo a GitHub.
+7. En el teléfono, abrir `https://TU-USUARIO.github.io/steamlab-merge/visor.html`, seleccionar el `targets.mind` transferido y pulsar **Activar cámara y visor RA**. Conceder permiso a la cámara.
+8. Apuntar la cámara a una cara del cubo original, con iluminación uniforme.
 
-Crea uno nuevo llamado `steamlab-merge` (público). No toques tu repositorio `steamlab-ra`. Sube a la raíz de `steamlab-merge` los archivos `index.html`, `entrenar.html`, `visor.html`, `surface.js`, `style.css`, `README.md`.
+## Advertencias técnicas
 
-Activa **Settings → Pages → Deploy from a branch → main → /(root)**.
+- **Prototipo experimental sin validación en tu teléfono todavía.** Puede requerir ajustes.
+- El archivo de reconocimiento se selecciona desde el teléfono y permanece local; no se sube a servidores de STEAMLab.
+- Este MVP reconoce imágenes de caras **de manera independiente**; **no** calcula una pose conjunta estable del cubo multicara, ni garantiza transiciones suaves entre caras o reconocimiento bajo oblicuidad intensa.
+- MindAR, A-Frame y sus componentes requieren conexión de internet. Se usa un modelo térmico simulado: no hay datos industriales reales.
+- En caso de fallar, sigue disponible la aplicación Hiro `steamlab-ra`, que permanece independiente.
 
-Dirección probable: `https://TU-USUARIO.github.io/steamlab-merge/`.
+## Derechos de uso
 
-## 2. Fotografía las caras originales
-
-- Una fotografía **de frente** por cara, teléfono paralelo a la cara, sin perspectiva oblicua.
-- Luz difusa y constante, evitar brillos, sombras y desenfoque.
-- Recorta ajustando al cuadrado de cada cara; elimina mesa/fondo y mantén todos sus símbolos visibles.
-- Nombra las imágenes `cara01.jpg` a `cara06.jpg` para asegurar un orden estable. Puedes empezar únicamente con `cara01.jpg`.
-- Si el patrón es brillante o muy repetitivo puede dar reconocimiento inestable. Prueba otra cara.
-
-## 3. Compila el reconocimiento
-
-Abre `https://TU-USUARIO.github.io/steamlab-merge/entrenar.html` en Chrome desde una computadora, elige fotografías, pulsa **Generar targets.mind**. El entrenamiento puede tardar. Descarga `targets.mind` y súbelo a **la raíz del repositorio** en GitHub. Haz Commit changes. Si solo cargas una cara, los otros cinco índices del visor no son objetivos válidos; comienza probando la cara 1.
-
-## 4. Usa el cubo en la cámara
-
-Abre `https://TU-USUARIO.github.io/steamlab-merge/visor.html` desde Chrome en el celular, concede permiso de cámara y apunta a la cara fotografiada. Con reconocimiento efectivo verás la superficie térmica de prueba. Inclina ligeramente, evita tapar patrones. Cuando cambies de cara puede perder seguimiento.
-
-## Limitaciones y diagnóstico
-
-- Si aparece 404 de `targets.mind`: faltó subir el archivo compilado.
-- Si cámara no aparece: usa HTTPS y permite cámara.
-- Si no detecta ninguna cara: vuelve a fotografiar cara plana, recortar y recompilar una sola imagen; revisa brillo, orientación y distancia.
-- Si el archivo `.mind` falla o el navegador se queda sin memoria, compila menos caras en computadora.
-- El laboratorio ofrece una superficie **simulada** T(x,y), no medidas industriales reales.
-
-## Fuente técnica
-
-MindAR: https://github.com/hiukim/mind-ar-js ; compilador: https://hiukim.github.io/mind-ar-js-doc/tools/compile . Tecnología de terceros bajo sus respectivas licencias. Sin afiliación a Merge EDU.
+La plantilla entregada advierte que sus diseños pertenecen a Merge Labs, y restringe distribución y obras derivadas. Por eso **no se incluyen sus imágenes ni un descriptor derivado** en el repositorio público. El paquete con las seis caras se entrega aparte al usuario para pruebas personales de su propio material; no debe compartirse ni republicarse sin autorización. Este prototipo no está afiliado a Merge EDU.
