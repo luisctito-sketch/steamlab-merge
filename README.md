@@ -1,15 +1,18 @@
-# STEAMLab Merge Cube V5 — Visor Three.js
+STEAMLab Merge Cube V6 — Compatibilidad corregida
 
-Se sustituyó únicamente la capa A-Frame de visualización del visor por **MindARThree/Three.js**. El objetivo es resolver el problema donde aparece «Cara detectada», pero no la cámara ni ningún objeto 3D.
+La versión V5 utilizaba Three.js 0.136. MindAR 1.2.5 requiere como mínimo Three.js r137.
+Esta versión utiliza Three.js 0.160 y la configuración de importmap recomendada
+por la documentación oficial de MindAR.
 
-## Actualización
+INSTRUCCIONES:
+1. En tu repositorio steamlab-merge sustituye SOLO visor.html.
+2. Confirma (Commit changes).
+3. Abre en tu Android: https://luisctito-sketch.github.io/steamlab-merge/visor.html?v=6
+4. Selecciona el mismo targets.mind PRIVADO y pulsa Activar cámara.
+5. Si hay un error de JavaScript o de bibliotecas, se verá un mensaje en pantalla.
 
-En el repositorio `steamlab-merge` sustituye **solo `visor.html`** con este archivo. Conserva todos los demás archivos y el `targets.mind` privado. Abre `visor.html?v=5` en Chrome del celular y carga el `targets.mind` de las seis caras.
+NO subas targets.mind ni imágenes protegidas del Merge Cube.
+No modifica tu visor Hiro steamlab-ra.
 
-## Diagnóstico
-
-Si funciona, verás **video real** detrás del HUD, la superficie térmica y un cuadrado fucsia sobre la cara detectada. Si hay video pero no objeto, reporta el texto del rótulo superior derecho. Si no hay video, reporta el error visible.
-
-### Nota
-
-El código necesita conexión para cargar `three` y `mind-ar`. Todavía no se ha verificado el comportamiento de esta versión en tu celular. Las seis caras se detectan por separado, no constituyen seguimiento multicara continuo. No publiques imágenes ni archivos `targets.mind` de Merge en un repositorio público.
+Esta corrección es de compatibilidad/importación. No ha sido validada con tu cámara.
+Fuentes: https://hiukim.github.io/mind-ar-js-doc/installation/
