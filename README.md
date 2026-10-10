@@ -1,30 +1,39 @@
-# STEAMLab · Merge Cube original — versión con plantilla
+# STEAMLab Merge Cube — Caras corregidas
 
-Este repositorio es **independiente** de `steamlab-ra` (Hiro). Muestra una superficie térmica simulada mediante reconocimiento experimental de las caras originales del cubo.
+## ¿Hay que rehacer la aplicación?
+No. El visor y el compilador admiten imágenes JPG, PNG y WebP.
+Las seis nuevas caras ya están bien separadas; lo necesario es GENERAR OTRA VEZ
+`targets.mind`, utilizando exclusivamente las seis imágenes JPG corregidas.
 
-## Sin fotografías
+## Cómo proceder
+1. Publica los archivos de esta carpeta en tu repositorio **steamlab-merge**,
+   sin subir fotografías, patrones, ni el archivo `targets.mind`.
+   Si ya publicaste la aplicación anterior, basta con sustituir `entrenar.html`.
+2. Abre `https://luisctito-sketch.github.io/steamlab-merge/entrenar.html`
+   desde una computadora.
+3. Elige, juntas, las imágenes originales que facilitaste:
+   `Cara-merge-01.jpg` a `Cara-merge-06.jpg`.
+   Se ordenarán automáticamente por el número del nombre.
+4. Pulsa **Generar targets.mind**. Descarga el archivo a tu dispositivo.
+5. Abre `https://luisctito-sketch.github.io/steamlab-merge/visor.html`
+   en Chrome del celular, selecciona el NUEVO archivo `targets.mind`,
+   y concede permiso a la cámara.
+6. Enfoca una cara completa del cubo con luz uniforme, y gira lentamente.
 
-Las seis imágenes de referencia ya se extrajeron de la plantilla PDF aportada por el usuario y se proporcionan **por separado, para uso personal**. El código publicado en GitHub **no contiene** las caras de Merge ni `targets.mind`.
+**No reutilices el archivo `targets.mind` generado con los recortes incorrectos.**
 
-## Publicar en GitHub Pages
+## Limitaciones técnicas
+MindAR trata las seis caras como **seis objetivos de imagen independientes**.
+Eso permite ensayar la detección de cada cara, pero NO equivale a seguimiento
+continuo de un cubo con geometría multicara. La aplicación sigue siendo
+experimental; un cambio de cara puede hacer perder temporalmente el modelo.
+Tampoco se ha verificado su funcionamiento con las seis caras en tu dispositivo.
 
-1. Crear repositorio público nuevo, por ejemplo `steamlab-merge`.
-2. Subir solo los archivos de este paquete de GitHub: `index.html`, `entrenar.html`, `visor.html`, `surface.js`, `style.css`, `README.md`. No subir imágenes del Merge Cube ni `targets.mind`.
-3. Settings → Pages → Deploy from branch → main / (root) → Save.
-4. En tu computadora, abrir `https://TU-USUARIO.github.io/steamlab-merge/entrenar.html`.
-5. Seleccionar las **seis imágenes** del paquete personal de referencia, desde tu computadora. Pulsar **Generar targets.mind**. Requiere internet y puede utilizar bastante memoria.
-6. Transferir `targets.mind` al celular mediante USB, Drive o mecanismo de transferencia de archivos. No hace falta subirlo a GitHub.
-7. En el teléfono, abrir `https://TU-USUARIO.github.io/steamlab-merge/visor.html`, seleccionar el `targets.mind` transferido y pulsar **Activar cámara y visor RA**. Conceder permiso a la cámara.
-8. Apuntar la cámara a una cara del cubo original, con iluminación uniforme.
+## Protección de las imágenes de Merge
+Las imágenes de caras provienen del material aportado por el usuario y de su
+plantilla bajo condiciones de Merge Labs. Úsalas solamente de acuerdo con los
+permisos de ese material; no las publiques en GitHub ni en sitios abiertos.
+El archivo `targets.mind` generado a partir de ellas también debe mantenerse
+privado.
 
-## Advertencias técnicas
-
-- **Prototipo experimental sin validación en tu teléfono todavía.** Puede requerir ajustes.
-- El archivo de reconocimiento se selecciona desde el teléfono y permanece local; no se sube a servidores de STEAMLab.
-- Este MVP reconoce imágenes de caras **de manera independiente**; **no** calcula una pose conjunta estable del cubo multicara, ni garantiza transiciones suaves entre caras o reconocimiento bajo oblicuidad intensa.
-- MindAR, A-Frame y sus componentes requieren conexión de internet. Se usa un modelo térmico simulado: no hay datos industriales reales.
-- En caso de fallar, sigue disponible la aplicación Hiro `steamlab-ra`, que permanece independiente.
-
-## Derechos de uso
-
-La plantilla entregada advierte que sus diseños pertenecen a Merge Labs, y restringe distribución y obras derivadas. Por eso **no se incluyen sus imágenes ni un descriptor derivado** en el repositorio público. El paquete con las seis caras se entrega aparte al usuario para pruebas personales de su propio material; no debe compartirse ni republicarse sin autorización. Este prototipo no está afiliado a Merge EDU.
+El primer visor con marcador Hiro (`steamlab-ra`) no cambia.
