@@ -7,7 +7,7 @@ AFRAME.registerComponent('thermal-surface', {
     this.T=(x,y)=>30+6*Math.sin(x/1.4)*Math.cos(y/1.3)+0.6*x+0.4*y;
     // Same thermal field as the Hiro lab, mapped onto a square centered on the target.
     const n=49, pos=[], colors=[], indices=[];
-    const scale=0.68/6;
+    const scale=0.82/6;
     for(let j=0;j<n;j++) for(let i=0;i<n;i++){
       const x=-3+6*i/(n-1), y=-3+6*j/(n-1), temp=this.T(x,y);
       // IN THE TARGET XY PLANE: z is the measured visual elevation.
@@ -26,13 +26,13 @@ AFRAME.registerComponent('thermal-surface', {
     geo.setAttribute('color',new THREE.Float32BufferAttribute(colors,3));
     geo.setIndex(indices);geo.computeVertexNormals();
     this.mesh=new THREE.Mesh(geo,new THREE.MeshBasicMaterial({vertexColors:true,side:THREE.DoubleSide,depthTest:false}));
-    this.mesh.renderOrder=2;
+    this.mesh.renderOrder=10;
     this.el.object3D.add(this.mesh);
     this.dot=new THREE.Mesh(new THREE.SphereGeometry(0.014,14,10),new THREE.MeshBasicMaterial({color:0xffffff,depthTest:false}));
-    this.dot.renderOrder=3;this.el.object3D.add(this.dot);
+    this.dot.renderOrder=11;this.el.object3D.add(this.dot);
     // Debug / tracking confirmation: always-visible magenta sphere near the surface.
     this.debug=new THREE.Mesh(new THREE.SphereGeometry(0.025,12,8),new THREE.MeshBasicMaterial({color:0xff48da,depthTest:false}));
-    this.debug.position.set(-0.30,-0.30,0.36);this.debug.renderOrder=4;this.el.object3D.add(this.debug);
+    this.debug.position.set(-0.30,-0.30,0.36);this.debug.renderOrder=12;this.el.object3D.add(this.debug);
     this.update();
   },
   update: function(){

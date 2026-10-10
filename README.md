@@ -1,25 +1,21 @@
-# STEAMLab Merge Cube — visor corregido
+# STEAMLab Merge Cube — Visor v4 (diagnóstico de anclajes)
 
-Se ha corregido la orientación de la superficie respecto al plano del objetivo reconocido por MindAR.
-La superficie está ahora representada en XY con relieve en Z, e incluye un punto de prueba
-fucsia. El visor conserva la carga privada de `targets.mind` desde el celular.
+Esta versión reconstruye los seis anclajes de MindAR **antes** de que A-Frame inicialice
+la escena. En la versión anterior el mensaje «Cara detectada» podía mostrarse aun si
+el objeto 3D no estaba registrado correctamente.
 
-## Actualización en GitHub
+## Actualización
+1. Sustituye `visor.html` y `surface.js` en tu repositorio `steamlab-merge`.
+2. No modifiques `targets.mind` ni vuelvas a generarlo.
+3. Abre `https://luisctito-sketch.github.io/steamlab-merge/visor.html?v=4`
+   en Chrome, selecciona tu archivo `.mind` local y activa la cámara.
+4. Al detectar una cara, comprueba si aparece el **cuadrado fucsia opaco**.
+   Junto a él debe verse una superficie térmica de colores.
 
-En `steamlab-merge`, reemplaza **dos archivos solamente**: `surface.js` y
-`visor.html`. No toques el repositorio `steamlab-ra` que utiliza Hiro.
+Si vuelve a aparecer «Cara detectada» pero no aparece el cuadrado fucsia, el
+problema probablemente es de inicialización de renderizado/capa de video del
+dispositivo: envía una captura para el siguiente diagnóstico. Esta versión no
+ha sido probada en tu teléfono y sigue siendo experimental.
 
-Abre en Chrome una ventana privada o visita `visor.html?v=3` después de publicar
-los cambios para evitar versiones guardadas en caché.
-
-1. Selecciona el mismo `targets.mind` (no es necesario recompilar).
-2. Activa cámara y muestra de frente una cara ya entrenada.
-3. Debe aparecer la superficie multicolor y una esfera fucsia en su esquina.
-4. Si el estado dice «Cara detectada» pero la pantalla sigue vacía, comprueba
-   si se ve al menos la esfera fucsia y comparte una captura. Puede indicar
-   un problema adicional de anclaje o renderización no reproducible aquí.
-
-**Advertencia:** esta versión es experimental, no seguimiento geométrico de
-seis caras como un solo cubo. Con algunas caras se perderá el seguimiento.
-**Privacidad:** las imágenes de las caras y `targets.mind` no se incorporan ni
-se deben subir a un repositorio público.
+El laboratorio original Hiro (`steamlab-ra`) no cambia. Los diseños originales
+de Merge y tu archivo `.mind` permanecen privados.

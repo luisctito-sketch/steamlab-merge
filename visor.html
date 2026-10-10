@@ -1,4 +1,55 @@
-<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no"><title>STEAMLab · RA Merge Cube</title><link rel="stylesheet" href="style.css"><script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script><script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script><script src="surface.js?v=3"></script></head><body style="margin:0;overflow:hidden"><div id="setup" style="position:fixed;inset:0;background:#09182c;z-index:100;padding:20px;overflow:auto"><h2>STEAMLab · Merge Cube</h2><p>Selecciona tu <code>targets.mind</code> generado con las seis caras de la plantilla. Se leerá solo en este dispositivo.</p><input id="mind" type="file" accept=".mind,application/octet-stream"><button id="start" style="margin-top:12px">Activar cámara y visor RA</button><p id="startStatus" role="status">Sin archivo seleccionado.</p><a href="index.html">Volver al inicio</a></div><div id="hud" style="display:none"><div class="panel"><b>STEAMLab · Merge Cube</b><p>Enfoca una cara completa. Superficie térmica y punto fucsia de prueba. La detección entre caras es experimental.</p><label>x: <output id="xo">0.0</output> m<input id="x" type="range" min="-3" max="3" step="0.2" value="0"></label><label>y: <output id="yo">0.0</output> m<input id="y" type="range" min="-3" max="3" step="0.2" value="0"></label><p id="calc">T = 30 °C</p><a href="index.html">Inicio</a></div></div><div id="raMount"></div><div id="estado" style="display:none">Iniciando cámara…</div><script>
-let localURL;const start=document.getElementById('start');start.addEventListener('click',async()=>{const f=document.getElementById('mind').files[0];if(!f){document.getElementById('startStatus').textContent='Elige primero targets.mind';return;}if(!f.name.endsWith('.mind')){document.getElementById('startStatus').textContent='Se necesita un archivo .mind';return;}start.disabled=true;document.getElementById('startStatus').textContent='Iniciando el reconocimiento…';try{localURL=URL.createObjectURL(f);const sc=document.createElement('a-scene');sc.setAttribute('mindar-image',`imageTargetSrc: ${localURL}; maxTrack: 1; autoStart: true; filterMinCF: 0.0001; filterBeta: 0.1`);sc.setAttribute('embedded','');sc.setAttribute('color-space','sRGB');sc.setAttribute('renderer','colorManagement: true; antialias: true');sc.setAttribute('vr-mode-ui','enabled: false');sc.setAttribute('device-orientation-permission-ui','enabled: false');sc.innerHTML='<a-camera position="0 0 0" look-controls="enabled: false"></a-camera><a-entity id="targets"></a-entity>';document.getElementById('raMount').appendChild(sc);sc.addEventListener('loaded',()=>{const host=document.getElementById('targets');for(let i=0;i<6;i++){const anchor=document.createElement('a-entity');anchor.setAttribute('mindar-image-target',`targetIndex: ${i}`);const mesh=document.createElement('a-entity');mesh.setAttribute('thermal-surface','x:0; y:0');anchor.appendChild(mesh);anchor.addEventListener('targetFound',()=>document.getElementById('estado').textContent=`Cara ${i+1} detectada · debería aparecer la superficie y un punto fucsia`);anchor.addEventListener('targetLost',()=>document.getElementById('estado').textContent='Buscando otra cara…');host.appendChild(anchor);}update();});sc.addEventListener('arError',()=>document.getElementById('estado').textContent='No se pudo iniciar la cámara o cargar el reconocimiento.');document.getElementById('setup').style.display='none';document.getElementById('hud').style.display='flex';document.getElementById('estado').style.display='block';}catch(e){document.getElementById('startStatus').textContent=e.message;start.disabled=false;}});
-function update(){const x=+document.getElementById('x').value,y=+document.getElementById('y').value,T=30+6*Math.sin(x/1.4)*Math.cos(y/1.3)+0.6*x+0.4*y,gx=6/1.4*Math.cos(x/1.4)*Math.cos(y/1.3)+.6,gy=-6/1.3*Math.sin(x/1.4)*Math.sin(y/1.3)+.4;document.getElementById('xo').textContent=x.toFixed(1);document.getElementById('yo').textContent=y.toFixed(1);document.getElementById('calc').textContent=`T: ${T.toFixed(1)} °C · ∇T: (${gx.toFixed(2)}, ${gy.toFixed(2)}) °C/m`;document.querySelectorAll('[thermal-surface]').forEach(el=>el.setAttribute('thermal-surface',`x:${x};y:${y}`));}['x','y'].forEach(id=>document.getElementById(id).addEventListener('input',update));
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no"><title>STEAMLab · RA Merge Cube</title><link rel="stylesheet" href="style.css"><script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script><script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script><script src="surface.js?v=4"></script></head><body style="margin:0;overflow:hidden"><div id="setup" style="position:fixed;inset:0;background:#09182c;z-index:100;padding:20px;overflow:auto"><h2>STEAMLab · Merge Cube</h2><p>Selecciona tu <code>targets.mind</code> generado con las seis caras de la plantilla. Se leerá solo en este dispositivo.</p><input id="mind" type="file" accept=".mind,application/octet-stream"><button id="start" style="margin-top:12px">Activar cámara y visor RA</button><p id="startStatus" role="status">Sin archivo seleccionado.</p><a href="index.html">Volver al inicio</a></div><div id="hud" style="display:none"><div class="panel"><b>STEAMLab · Merge Cube</b><p>Enfoca una cara completa. Superficie térmica y cuadrado fucsia de diagnóstico. La detección entre caras es experimental.</p><label>x: <output id="xo">0.0</output> m<input id="x" type="range" min="-3" max="3" step="0.2" value="0"></label><label>y: <output id="yo">0.0</output> m<input id="y" type="range" min="-3" max="3" step="0.2" value="0"></label><p id="calc">T = 30 °C</p><a href="index.html">Inicio</a></div></div><div id="raMount"></div><div id="estado" style="display:none">Iniciando cámara…</div><script>
+let localURL;
+const start=document.getElementById('start');
+const status=document.getElementById('estado');
+const setupStatus=document.getElementById('startStatus');
+start.addEventListener('click', async () => {
+ const f=document.getElementById('mind').files[0];
+ if(!f || !f.name.toLowerCase().endsWith('.mind')) { setupStatus.textContent='Selecciona primero un archivo targets.mind'; return; }
+ start.disabled=true;
+ setupStatus.textContent='Preparando los seis anclajes y la cámara…';
+ try {
+  localURL=URL.createObjectURL(f);
+  const sc=document.createElement('a-scene');
+  // IMPORTANT: all targets are present before A-Frame initializes this scene.
+  sc.setAttribute('mindar-image',`imageTargetSrc: ${localURL}; maxTrack: 1; autoStart: true; filterMinCF: 0.0001; filterBeta: 0.1`);
+  sc.setAttribute('embedded','');
+  sc.setAttribute('renderer','colorManagement: true; antialias: true; alpha: true');
+  sc.setAttribute('vr-mode-ui','enabled: false');
+  sc.setAttribute('device-orientation-permission-ui','enabled: false');
+  sc.setAttribute('loading-screen','enabled: false');
+  sc.style.position='fixed';sc.style.inset='0';sc.style.width='100vw';sc.style.height='100dvh';
+  // Scene template includes the anchors and their meshes BEFORE mounting.
+  sc.innerHTML=`<a-camera position="0 0 0" look-controls="enabled: false" wasd-controls="enabled: false"></a-camera>
+   ${Array.from({length:6},(_,i)=>`<a-entity mindar-image-target="targetIndex: ${i}" data-face="${i+1}">
+    <a-box position="0 0 0.12" rotation="0 0 0" width="0.27" height="0.27" depth="0.05" color="#ff00aa" material="shader: flat; depthTest: false" visible="true"></a-box>
+    <a-entity thermal-surface="x:0; y:0" position="0 0 0.08"></a-entity>
+   </a-entity>`).join('')}`;
+  sc.addEventListener('loaded',()=>{
+   status.textContent='Escena 3D preparada. Enfoca una cara completa del cubo.';
+  });
+  sc.addEventListener('arReady',()=>{status.textContent='Cámara lista. Enfoca una de las seis caras.';});
+  sc.addEventListener('arError',()=>{status.textContent='Error al iniciar la cámara o cargar targets.mind.';});
+  for(const a of sc.querySelectorAll('[mindar-image-target]')){
+    const n=a.getAttribute('data-face');
+    a.addEventListener('targetFound',()=>{status.textContent=`Cara ${n} detectada. Debe verse un cuadrado fucsia y la superficie.`;});
+    a.addEventListener('targetLost',()=>{status.textContent='Buscando otra cara del Merge Cube…';});
+  }
+  document.getElementById('raMount').appendChild(sc);
+  document.getElementById('setup').style.display='none';
+  document.getElementById('hud').style.display='flex';
+  status.style.display='block';
+  update();
+ } catch(e){setupStatus.textContent=`Error de inicialización: ${e.message}`;start.disabled=false;}
+});
+function update(){
+ const x=+document.getElementById('x').value,y=+document.getElementById('y').value;
+ const T=30+6*Math.sin(x/1.4)*Math.cos(y/1.3)+0.6*x+0.4*y;
+ const gx=6/1.4*Math.cos(x/1.4)*Math.cos(y/1.3)+.6;
+ const gy=-6/1.3*Math.sin(x/1.4)*Math.sin(y/1.3)+.4;
+ document.getElementById('xo').textContent=x.toFixed(1);document.getElementById('yo').textContent=y.toFixed(1);
+ document.getElementById('calc').textContent=`T: ${T.toFixed(1)} °C · ∇T: (${gx.toFixed(2)}, ${gy.toFixed(2)}) °C/m`;
+ document.querySelectorAll('[thermal-surface]').forEach(el=>el.setAttribute('thermal-surface',`x:${x}; y:${y}`));
+}
+['x','y'].forEach(id=>document.getElementById(id).addEventListener('input',update));
 </script></body></html>
