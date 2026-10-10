@@ -1,55 +1,63 @@
-<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no"><title>STEAMLab · RA Merge Cube</title><link rel="stylesheet" href="style.css"><script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script><script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script><script src="surface.js?v=4"></script></head><body style="margin:0;overflow:hidden"><div id="setup" style="position:fixed;inset:0;background:#09182c;z-index:100;padding:20px;overflow:auto"><h2>STEAMLab · Merge Cube</h2><p>Selecciona tu <code>targets.mind</code> generado con las seis caras de la plantilla. Se leerá solo en este dispositivo.</p><input id="mind" type="file" accept=".mind,application/octet-stream"><button id="start" style="margin-top:12px">Activar cámara y visor RA</button><p id="startStatus" role="status">Sin archivo seleccionado.</p><a href="index.html">Volver al inicio</a></div><div id="hud" style="display:none"><div class="panel"><b>STEAMLab · Merge Cube</b><p>Enfoca una cara completa. Superficie térmica y cuadrado fucsia de diagnóstico. La detección entre caras es experimental.</p><label>x: <output id="xo">0.0</output> m<input id="x" type="range" min="-3" max="3" step="0.2" value="0"></label><label>y: <output id="yo">0.0</output> m<input id="y" type="range" min="-3" max="3" step="0.2" value="0"></label><p id="calc">T = 30 °C</p><a href="index.html">Inicio</a></div></div><div id="raMount"></div><div id="estado" style="display:none">Iniciando cámara…</div><script>
-let localURL;
-const start=document.getElementById('start');
-const status=document.getElementById('estado');
-const setupStatus=document.getElementById('startStatus');
-start.addEventListener('click', async () => {
- const f=document.getElementById('mind').files[0];
- if(!f || !f.name.toLowerCase().endsWith('.mind')) { setupStatus.textContent='Selecciona primero un archivo targets.mind'; return; }
- start.disabled=true;
- setupStatus.textContent='Preparando los seis anclajes y la cámara…';
- try {
-  localURL=URL.createObjectURL(f);
-  const sc=document.createElement('a-scene');
-  // IMPORTANT: all targets are present before A-Frame initializes this scene.
-  sc.setAttribute('mindar-image',`imageTargetSrc: ${localURL}; maxTrack: 1; autoStart: true; filterMinCF: 0.0001; filterBeta: 0.1`);
-  sc.setAttribute('embedded','');
-  sc.setAttribute('renderer','colorManagement: true; antialias: true; alpha: true');
-  sc.setAttribute('vr-mode-ui','enabled: false');
-  sc.setAttribute('device-orientation-permission-ui','enabled: false');
-  sc.setAttribute('loading-screen','enabled: false');
-  sc.style.position='fixed';sc.style.inset='0';sc.style.width='100vw';sc.style.height='100dvh';
-  // Scene template includes the anchors and their meshes BEFORE mounting.
-  sc.innerHTML=`<a-camera position="0 0 0" look-controls="enabled: false" wasd-controls="enabled: false"></a-camera>
-   ${Array.from({length:6},(_,i)=>`<a-entity mindar-image-target="targetIndex: ${i}" data-face="${i+1}">
-    <a-box position="0 0 0.12" rotation="0 0 0" width="0.27" height="0.27" depth="0.05" color="#ff00aa" material="shader: flat; depthTest: false" visible="true"></a-box>
-    <a-entity thermal-surface="x:0; y:0" position="0 0 0.08"></a-entity>
-   </a-entity>`).join('')}`;
-  sc.addEventListener('loaded',()=>{
-   status.textContent='Escena 3D preparada. Enfoca una cara completa del cubo.';
-  });
-  sc.addEventListener('arReady',()=>{status.textContent='Cámara lista. Enfoca una de las seis caras.';});
-  sc.addEventListener('arError',()=>{status.textContent='Error al iniciar la cámara o cargar targets.mind.';});
-  for(const a of sc.querySelectorAll('[mindar-image-target]')){
-    const n=a.getAttribute('data-face');
-    a.addEventListener('targetFound',()=>{status.textContent=`Cara ${n} detectada. Debe verse un cuadrado fucsia y la superficie.`;});
-    a.addEventListener('targetLost',()=>{status.textContent='Buscando otra cara del Merge Cube…';});
-  }
-  document.getElementById('raMount').appendChild(sc);
-  document.getElementById('setup').style.display='none';
-  document.getElementById('hud').style.display='flex';
-  status.style.display='block';
-  update();
- } catch(e){setupStatus.textContent=`Error de inicialización: ${e.message}`;start.disabled=false;}
-});
-function update(){
- const x=+document.getElementById('x').value,y=+document.getElementById('y').value;
- const T=30+6*Math.sin(x/1.4)*Math.cos(y/1.3)+0.6*x+0.4*y;
- const gx=6/1.4*Math.cos(x/1.4)*Math.cos(y/1.3)+.6;
- const gy=-6/1.3*Math.sin(x/1.4)*Math.sin(y/1.3)+.4;
- document.getElementById('xo').textContent=x.toFixed(1);document.getElementById('yo').textContent=y.toFixed(1);
- document.getElementById('calc').textContent=`T: ${T.toFixed(1)} °C · ∇T: (${gx.toFixed(2)}, ${gy.toFixed(2)}) °C/m`;
- document.querySelectorAll('[thermal-surface]').forEach(el=>el.setAttribute('thermal-surface',`x:${x}; y:${y}`));
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>STEAMLab · Merge Cube V5</title><link rel="stylesheet" href="./style.css">
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.136.0/build/three.module.js"}}</script>
+<style>
+html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#0b1b2c}
+#cameraLayer{position:fixed;inset:0;z-index:1;overflow:hidden;background:#090d14}
+#cameraLayer video{display:block}
+#setup{position:fixed;inset:0;z-index:100;background:#10273e;padding:20px;overflow:auto}
+#hud{position:fixed;top:8px;left:8px;right:auto;z-index:30;max-width:300px;display:none}
+#estado{z-index:40;bottom:12px;left:10px;right:10px}
+#debug{position:fixed;top:0;right:0;z-index:35;background:#06233bc7;color:#fff;font-size:11px;padding:5px;max-width:48vw}
+</style></head><body>
+<div id="cameraLayer"></div>
+<div id="setup"><h2>STEAMLab · Merge Cube V5</h2><p>Nuevo visor Three.js. Usa el mismo archivo privado <code>targets.mind</code>. No se sube a internet.</p><input id="mind" type="file" accept=".mind,application/octet-stream"><p><button id="start">Activar cámara y prueba 3D</button></p><p id="preStatus">Selecciona tu archivo.</p><a href="index.html">Volver al inicio</a></div>
+<div id="hud"><div class="panel"><b>STEAMLab · Merge Cube · V5</b><p>Modelo de temperatura y prueba fucsia. Reconocimiento independiente de cada cara.</p><label>x: <output id="xo">0.0</output> m <input id="x" type="range" min="-3" max="3" step="0.2" value="0"></label><label>y: <output id="yo">0.0</output> m <input id="y" type="range" min="-3" max="3" step="0.2" value="0"></label><p id="calc">T=30 °C</p><a href="index.html">Inicio</a></div></div>
+<div id="debug">V5 / aún sin iniciar</div>
+<div id="estado" style="display:none">Iniciando...</div>
+<script type="module">
+import * as THREE from 'three';
+import {MindARThree} from 'https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-three.prod.js';
+const $ = id => document.getElementById(id);
+let mindar, anchors=[], dots=[], url;
+function T(x,y){return 30+6*Math.sin(x/1.4)*Math.cos(y/1.3)+0.6*x+0.4*y}
+function grad(x,y){return [(6/1.4)*Math.cos(x/1.4)*Math.cos(y/1.3)+.6,-(6/1.3)*Math.sin(x/1.4)*Math.sin(y/1.3)+.4]}
+function model(){
+ const g=new THREE.Group(),N=41,verts=[],colors=[],index=[];
+ for(let j=0;j<N;j++)for(let i=0;i<N;i++){
+  const x=-3+6*i/(N-1),y=-3+6*j/(N-1),v=T(x,y);
+  verts.push(x*.115,y*.115,.10+(v-30)*.040);
+  const c=new THREE.Color().setHSL(.60-.49*Math.max(0,Math.min(1,(v-22)/17)),.88,.57);
+  colors.push(c.r,c.g,c.b);
+ }
+ for(let j=0;j<N-1;j++)for(let i=0;i<N-1;i++){const a=j*N+i,b=a+1,c=a+N,d=c+1;index.push(a,c,b,b,c,d)}
+ const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(verts,3));geo.setAttribute('color',new THREE.Float32BufferAttribute(colors,3));geo.setIndex(index);geo.computeVertexNormals();
+ const mesh=new THREE.Mesh(geo,new THREE.MeshBasicMaterial({vertexColors:true,side:THREE.DoubleSide,depthTest:false}));mesh.renderOrder=1;g.add(mesh);
+ const magenta=new THREE.Mesh(new THREE.BoxGeometry(.22,.22,.07),new THREE.MeshBasicMaterial({color:0xff00cc,depthTest:false}));magenta.position.set(-.31,.31,.24);magenta.renderOrder=3;g.add(magenta);
+ const dot=new THREE.Mesh(new THREE.SphereGeometry(.038,16,12),new THREE.MeshBasicMaterial({color:0xffffff,depthTest:false}));dot.renderOrder=4;g.add(dot);
+ return {g,dot};
 }
-['x','y'].forEach(id=>document.getElementById(id).addEventListener('input',update));
+function update(){const x=+$('x').value,y=+$('y').value,gg=grad(x,y);$('xo').textContent=x.toFixed(1);$('yo').textContent=y.toFixed(1);$('calc').textContent=`T: ${T(x,y).toFixed(1)} °C · ∇T: (${gg[0].toFixed(2)}, ${gg[1].toFixed(2)}) °C/m`;for(const dot of dots) dot.position.set(x*.115,y*.115,.125+(T(x,y)-30)*.040)}
+$('x').addEventListener('input',update);$('y').addEventListener('input',update);
+$('start').onclick=async()=>{
+ const file=$('mind').files[0];if(!file){$('preStatus').textContent='Selecciona primero targets.mind';return}
+ $('start').disabled=true;$('preStatus').textContent='Creando visor...';
+ try{
+   url=URL.createObjectURL(file);
+   mindar=new MindARThree({container:$('cameraLayer'),imageTargetSrc:url,maxTrack:1,uiLoading:'no',uiScanning:'no',uiError:'no'});
+   const {renderer,scene,camera}=mindar;
+   renderer.setClearColor(0x000000,0);
+   scene.add(new THREE.AmbientLight(0xffffff,1));
+   for(let i=0;i<6;i++){
+     const anchor=mindar.addAnchor(i);const {g,dot}=model();anchor.group.add(g);anchors.push(anchor);dots.push(dot);
+     anchor.onTargetFound=()=>{$('estado').textContent=`Cara ${i+1} detectada. Busca el cuadrado fucsia sobre ella.`;$('debug').textContent=`MindAR V5: cara ${i+1} detectada`;};
+     anchor.onTargetLost=()=>{$('estado').textContent='Buscando cara del Merge Cube…'};
+   }
+   update();
+   await mindar.start();
+   renderer.setAnimationLoop(()=>renderer.render(scene,camera));
+   $('setup').style.display='none';$('hud').style.display='block';$('estado').style.display='block';$('estado').textContent='Cámara iniciada. Enfoca una cara completa.';$('debug').textContent='MindAR V5: cámara iniciada';
+ }catch(e){$('preStatus').textContent='Error: '+String(e?.message||e);$('debug').textContent='V5 Error: '+String(e?.message||e);$('start').disabled=false}
+};
 </script></body></html>

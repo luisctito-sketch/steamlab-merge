@@ -1,21 +1,15 @@
-# STEAMLab Merge Cube — Visor v4 (diagnóstico de anclajes)
+# STEAMLab Merge Cube V5 — Visor Three.js
 
-Esta versión reconstruye los seis anclajes de MindAR **antes** de que A-Frame inicialice
-la escena. En la versión anterior el mensaje «Cara detectada» podía mostrarse aun si
-el objeto 3D no estaba registrado correctamente.
+Se sustituyó únicamente la capa A-Frame de visualización del visor por **MindARThree/Three.js**. El objetivo es resolver el problema donde aparece «Cara detectada», pero no la cámara ni ningún objeto 3D.
 
 ## Actualización
-1. Sustituye `visor.html` y `surface.js` en tu repositorio `steamlab-merge`.
-2. No modifiques `targets.mind` ni vuelvas a generarlo.
-3. Abre `https://luisctito-sketch.github.io/steamlab-merge/visor.html?v=4`
-   en Chrome, selecciona tu archivo `.mind` local y activa la cámara.
-4. Al detectar una cara, comprueba si aparece el **cuadrado fucsia opaco**.
-   Junto a él debe verse una superficie térmica de colores.
 
-Si vuelve a aparecer «Cara detectada» pero no aparece el cuadrado fucsia, el
-problema probablemente es de inicialización de renderizado/capa de video del
-dispositivo: envía una captura para el siguiente diagnóstico. Esta versión no
-ha sido probada en tu teléfono y sigue siendo experimental.
+En el repositorio `steamlab-merge` sustituye **solo `visor.html`** con este archivo. Conserva todos los demás archivos y el `targets.mind` privado. Abre `visor.html?v=5` en Chrome del celular y carga el `targets.mind` de las seis caras.
 
-El laboratorio original Hiro (`steamlab-ra`) no cambia. Los diseños originales
-de Merge y tu archivo `.mind` permanecen privados.
+## Diagnóstico
+
+Si funciona, verás **video real** detrás del HUD, la superficie térmica y un cuadrado fucsia sobre la cara detectada. Si hay video pero no objeto, reporta el texto del rótulo superior derecho. Si no hay video, reporta el error visible.
+
+### Nota
+
+El código necesita conexión para cargar `three` y `mind-ar`. Todavía no se ha verificado el comportamiento de esta versión en tu celular. Las seis caras se detectan por separado, no constituyen seguimiento multicara continuo. No publiques imágenes ni archivos `targets.mind` de Merge en un repositorio público.
